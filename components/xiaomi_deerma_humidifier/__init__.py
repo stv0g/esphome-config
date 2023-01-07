@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Steffen Vogel <post@steffenvogel.de>
+# SPDX-License-Identifier: Apache-2.0
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import uart, number, sensor, switch, select, binary_sensor
