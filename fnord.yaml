@@ -1,17 +1,15 @@
 esphome:
   name: fnord
 
-  includes:
-  - fnordlicht.hpp
-
-  on_boot:
-  - lambda: |-
-      id(ota1).set_auth_password("fc7db817a4ff500fd0d8e6620e2cef78");
-
 esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: arduino
+
+external_components:
+- source:
+    type: local
+    path: components
 
 logger:
   baud_rate: 0
@@ -46,21 +44,15 @@ uart:
   baud_rate: 19200
 
 light:
-- platform: custom
-  lambda: |-
-    auto fnordlicht = new FnordlichtOutput(id(fnordlicht_bus));
-    
-    App.register_component(fnordlicht);
-    
-    return {fnordlicht};
+- platform: fnordlicht
+  uart_id: fnordlicht_bus
+  id: fnordlicht1
 
-  lights:
-  - name: "Fnordlicht"
-    effects:
-    - random:
-    - flicker:
-    - strobe:
-    - pulse:
+  effects:
+  - random:
+  - flicker:
+  - strobe:
+  - pulse:
 
 switch:
 - platform: uart
