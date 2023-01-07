@@ -1,0 +1,43 @@
+esphome:
+  name: pv-esp8266
+
+esp8266:
+  board: esp01_1m
+
+api:
+
+ota:
+  password: !secret ota_password_pv_esp8266
+
+wifi:
+  ssid: !secret wifi_bus_ssid
+  password: !secret wifi_password
+
+  domain: .bus.0l.de
+
+  ap:
+    ssid: pv-esp8266-fallback
+    password: !secret wifi_password
+
+captive_portal:
+
+logger:
+  baud_rate: 0
+
+web_server:
+  port: 80
+  include_internal: true
+  ota: true
+
+external_components:
+- source: github://oxan/esphome-stream-server
+
+uart:
+  id: uart_bus
+  baud_rate: 9600
+  tx_pin: 1
+  rx_pin: 3
+
+stream_server:
+  uart_id: uart_bus
+  port: 1234

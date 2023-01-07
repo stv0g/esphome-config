@@ -1,0 +1,79 @@
+esphome:
+  name: fnord
+
+  includes:
+  - fnordlicht.hpp
+
+  on_boot:
+  - lambda: |-
+      id(ota1).set_auth_password("fc7db817a4ff500fd0d8e6620e2cef78");
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+logger:
+  baud_rate: 0
+
+web_server:
+  port: 80
+
+api:
+  encryption:
+    key: !secret api_password
+
+ota:
+  password: !secret ota_password
+  id: ota1
+
+wifi:
+  ssid: !secret wifi_home_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "fnord-fallback"
+    password: !secret wifi_password
+
+  domain: .home.0l.de
+
+captive_portal:
+
+uart:
+  id: fnordlicht_bus
+  tx_pin: GPIO21
+  rx_pin: GPIO20
+  baud_rate: 19200
+
+light:
+- platform: custom
+  lambda: |-
+    auto fnordlicht = new FnordlichtOutput(id(fnordlicht_bus));
+    
+    App.register_component(fnordlicht);
+    
+    return {fnordlicht};
+
+  lights:
+  - name: "Fnordlicht"
+    effects:
+    - random:
+    - flicker:
+    - strobe:
+    - pulse:
+
+switch:
+- platform: uart
+  name: "Sync Fnordlichter"
+  uart_id: fnordlicht_bus
+  data: [0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x00]
+
+- platform: uart
+  name: "Power down Fnordlichter"
+  uart_id: fnordlicht_bus
+  data: [0xff, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+
+- platform: uart
+  name: "Stop fading Fnordlichter"
+  uart_id: fnordlicht_bus
+  data: [0xff, 0x08, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
